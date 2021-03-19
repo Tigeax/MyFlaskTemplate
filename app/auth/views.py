@@ -14,6 +14,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # Settings discord OAuth2 authentification
 discordClientId = os.getenv('DISCORD_CLIENT_ID') # Get from https://discordapp.com/developers/applications
+print(discordClientId)
 discordClientSecret = os.getenv('DISCORD_CLIENT_SECRET')
 discordAuthScope = ['identify', 'guilds']
 discordAuthRedirectUrl = 'http://www.senthing.com:80/auth/discord_oauth_callback'
@@ -49,7 +50,7 @@ def discord_oauth_callback():
     """
     The callback we specified in our app.
     Processes the code given to us by Discord and sends it back
-    to Discord requesting a temporary access token so we can 
+    to Discord requesting a temporary access token so we can
     make requests on behalf (as if we were) the user.
     e.g. https://discordapp.com/api/users/@me
     The token is stored in a session variable, so it can

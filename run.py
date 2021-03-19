@@ -1,4 +1,9 @@
-import dotenv, os
+import dotenv
+
+# Load the environmental variables from the .env file
+dotenv.load_dotenv()
+
+import os
 from flask import Flask, redirect
 
 import database
@@ -11,9 +16,6 @@ from app.dashboard.views import dashboard
 
 # Create the instance of our web application
 app = Flask(__name__)
-
-# Load the environmental variables from the .env file
-dotenv.load_dotenv()
 
 # Register views
 app.register_blueprint(api, url_prefix="/api")
@@ -32,5 +34,4 @@ def landing_page():
 
 
 if __name__ == "__main__":
-
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
