@@ -1,0 +1,33 @@
+import dotenv
+from flask import Flask, redirect
+
+import database
+from database import db, db_conn
+
+from app.api.views import api
+from app.auth.views import auth
+from app.dashboard.views import dashboard
+
+
+# Create the instance of our web application
+app = Flask(__name__)
+
+# Load the environmental variables from the .env file
+dotenv.load_dotenv()
+
+# Register views
+app.register_blueprint(api, url_prefix="/api")
+app.register_blueprint(auth, url_prefix="/auth")
+app.register_blueprint(dashboard, url_prefix="/dashboard")
+
+# Close the database after a request has closed
+app.teardown_appcontext(database.close_db)
+
+
+@app.route('/')
+def landing_page():
+    return redirect('/dashboard')
+
+
+if __name__ == "__main__":
+    app.run(debug=True) #TODO remove debug in production
