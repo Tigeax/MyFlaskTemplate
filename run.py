@@ -1,4 +1,4 @@
-import dotenv
+import dotenv, os
 from flask import Flask, redirect
 
 import database
@@ -23,6 +23,7 @@ app.register_blueprint(dashboard, url_prefix="/dashboard")
 # Close the database after a request has closed
 app.teardown_appcontext(database.close_db)
 
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 @app.route('/')
 def landing_page():
