@@ -56,7 +56,7 @@ def discord_oauth_callback():
     be reused across separate web requests.
     """
 
-    discord = OAuth2Session(discordClientId, redirect_uri=discordAuthRedirectUrl, state=session['discordState'], scope=scope)
+    discord = OAuth2Session(discordClientId, redirect_uri=discordAuthRedirectUrl, state=session['discordState'], scope=discordAuthScope)
     token = discord.fetch_token(
         'https://discordapp.com/api/oauth2/token',
         client_secret=discordClientSecret,
