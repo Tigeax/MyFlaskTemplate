@@ -30,4 +30,4 @@ def landing_page():
 
 
 if __name__ == "__main__":
-    app.run(debug=True) #TODO remove debug in production
+    app.run(debug=True)
