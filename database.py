@@ -43,9 +43,10 @@ def get_user_id_by_discord_id(discordId):
 
     if result is None:
         add_user_by_discord_id(discordId)
-        get_user_id_by_discord_id(discordId)
-
-    return result['id']
+        userId = get_user_id_by_discord_id(discordId)
+        return userId
+    else:
+        return result['id']
 
 
 
