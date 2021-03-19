@@ -1,3 +1,6 @@
+# Extra
+*.sock
+
 # VS Code
 .vscode/
 *.db
