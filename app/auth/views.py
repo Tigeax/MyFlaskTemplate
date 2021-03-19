@@ -46,7 +46,7 @@ def discord_oauth_callback():
         authorization_response=request.url,
     )
     session['discord_token'] = token
-    return 'Thanks for granting us authorization. We are logging you in! You can now visit <a href="/profile">/profile</a>'
+    return 'Thanks for granting us authorization. We are logging you in! You can now visit <a href="/auth/profile">/profile</a>'
 
 
 @auth.route('/profile')
