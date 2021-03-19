@@ -14,7 +14,6 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # Settings discord OAuth2 authentification
 discordClientId = os.getenv('DISCORD_CLIENT_ID') # Get from https://discordapp.com/developers/applications
-print(discordClientId)
 discordClientSecret = os.getenv('DISCORD_CLIENT_SECRET')
 discordAuthScope = ['identify', 'guilds']
 discordAuthRedirectUrl = 'http://www.senthing.com:80/auth/discord_oauth_callback'

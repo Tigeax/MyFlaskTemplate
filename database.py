@@ -30,6 +30,7 @@ def close_db(error):
 
     if db is not None:
         db.close()
+        db_conn.close()
 
 
 def add_user_by_discord_id(discordId):
