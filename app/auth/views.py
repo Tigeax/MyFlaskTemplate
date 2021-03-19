@@ -9,6 +9,9 @@ from util import login_required
 
 auth = Blueprint("auth", __name__, template_folder="templates", static_folder="static")
 
+# Disable SSL requirement
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
 # Settings for your app
 base_discord_api_url = 'https://discordapp.com/api'
 client_id = r'822507064684314675' # Get from https://discordapp.com/developers/applications
