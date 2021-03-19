@@ -30,3 +30,23 @@ def close_db(error):
 
     if db is not None:
         db.close()
+
+
+def add_user_by_discord_id(discordId):
+    db.execute('INSERT INTO user (discord_id) VALUES (?)', (discordId,))
+    db_conn.commit()
+
+
+def get_user_id_by_discord_id(discordId):
+    result = db.execute('SELECT id FROM user WHERE discord_id = ?', (discordId,)).fetchone()
+
+    if result is None:
+        add_user_by_discord_id(discordId)
+        get_user_id_by_discord_id(discordId)
+
+    return result['id']
+
+
+
+
+

@@ -12,14 +12,11 @@ auth = Blueprint("auth", __name__, template_folder="templates", static_folder="s
 # Disable SSL requirement
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-# Settings for your app
-base_discord_api_url = 'https://discordapp.com/api'
-client_id = r'822507064684314675' # Get from https://discordapp.com/developers/applications
-client_secret = 'JIe-4gwCeZjTMcZj5FVlzjJAYjULJQqp'
-redirect_uri='http://www.senthing.com:80/auth/discord_oauth_callback'
-scope = ['identify', 'guilds']
-token_url = 'https://discordapp.com/api/oauth2/token'
-authorize_url = 'https://discordapp.com/api/oauth2/authorize'
+# Settings discord OAuth2 authentification
+discordClientId = os.getenv('DISCORD_CLIENT_ID') # Get from https://discordapp.com/developers/applications
+discordClientSecret = os.getenv('DISCORD_CLIENT_SECRET')
+discordAuthScope = ['identify', 'guilds']
+discordAuthRedirectUrl = 'http://www.senthing.com:80/auth/discord_oauth_callback'
 
 
 @auth.route('/')
@@ -30,12 +27,21 @@ def login():
         return redirect(url_for('auth.discord_login'))
 
 
+@auth.route('/logout')
+def logout():
+    for key in list(session.keys()):
+        print(key)
+        session.pop(key)
+
+    return redirect(url_for('auth.login'))
+
+
 @auth.route('/discord_login')
 def discord_login():
-    oauth = OAuth2Session(client_id, redirect_uri=redirect_uri, scope=scope)
-    login_url, state = oauth.authorization_url(authorize_url)
-    session['state'] = state
-    return redirect(login_url, code=302)
+    oauth = OAuth2Session(discordClientId, redirect_uri=discordAuthRedirectUrl, scope=discordAuthScope)
+    discordLoginUrl, state = oauth.authorization_url('https://discordapp.com/api/oauth2/authorize')
+    session['discordState'] = state
+    return redirect(discordLoginUrl, code=302)
 
 
 @auth.route("/discord_oauth_callback")
@@ -49,25 +55,20 @@ def discord_oauth_callback():
     The token is stored in a session variable, so it can
     be reused across separate web requests.
     """
-    discord = OAuth2Session(client_id, redirect_uri=redirect_uri, state=session['state'], scope=scope)
+
+    discord = OAuth2Session(discordClientId, redirect_uri=discordAuthRedirectUrl, state=session['discordState'], scope=scope)
     token = discord.fetch_token(
-        token_url,
-        client_secret=client_secret,
+        'https://discordapp.com/api/oauth2/token',
+        client_secret=discordClientSecret,
         authorization_response=request.url,
     )
+
+    session['discordToken'] = token
+
+    discord = OAuth2Session(discordClientId, token=session['discordToken'])
+    response = discord.get('https://discordapp.com/api' + '/users/@me')
+
     session['loggedin'] = True
-    session['discord_token'] = token
-    return redirect('/login')
+    session['userId'] = database.get_user_id_by_discord_id(response.json()['id'])
 
-
-@auth.route('/profile')
-@login_required
-def profile():
-    """
-    Example profile page to demonstrate how to pull the user information
-    once we have a valid access token after all OAuth negotiation.
-    """
-    discord = OAuth2Session(client_id, token=session['discord_token'])
-    response = discord.get(base_discord_api_url + '/users/@me')
-    # https://discordapp.com/developers/docs/resources/user#user-object-user-structure
-    return 'Profile: %s' % response.json()['id']
+    return redirect(url_for('auth.login'))

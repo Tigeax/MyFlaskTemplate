@@ -1,5 +1,6 @@
 from requests_oauthlib import OAuth2Session
 from flask import Blueprint, render_template, session
+import os
 
 import database
 from database import db, db_conn
@@ -8,15 +9,14 @@ from util import login_required
 
 dashboard = Blueprint("dashboard", __name__, template_folder="templates", static_folder="static")
 
-client_id = r'822507064684314675' # Get from https://discordapp.com/developers/applications
-base_discord_api_url = 'https://discordapp.com/api'
+discordClientId = os.getenv('DISCORD_CLIENT_ID') # Get from https://discordapp.com/developers/applications
 
 
 @dashboard.route('/')
 @login_required
 def home():
-    discord = OAuth2Session(client_id, token=session['discord_token'])
-    response = discord.get(base_discord_api_url + '/users/@me')
+    discord = OAuth2Session(discordClientId, token=session['discordToken'])
+    response = discord.get('https://discordapp.com/api' + '/users/@me')
 
     print(response.json())
 
