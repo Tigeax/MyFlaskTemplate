@@ -25,6 +25,7 @@ app.teardown_appcontext(database.close_db)
 
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
+
 @app.route('/')
 def landing_page():
     return redirect('/dashboard')
