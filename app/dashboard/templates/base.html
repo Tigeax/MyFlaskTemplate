@@ -15,6 +15,8 @@
 
     </head>
 
+    
+
     <body>
 
         <!-- Left Sidebar -->
@@ -25,7 +27,9 @@
         
         <!-- Page Content-->
         <div id="page-content" class="pusher">
-            {% block content %}{% endblock %}
+            <div class="ui basic segment">
+                {% block content %}{% endblock %}
+            </div>
         </div>
         
         {% include 'components/footer.html' %}
@@ -70,7 +74,7 @@
 
     $(document).ready(function() {
         resizeElements(false)
+        $('.ui.dropdown').dropdown() // Init dropdowns
     });
-
 
 </script>
