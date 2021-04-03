@@ -1,13 +1,93 @@
 from requests_oauthlib import OAuth2Session
-from flask import Flask, request, session, Blueprint, render_template, redirect, url_for
+from flask import Flask, request, session, Blueprint, render_template, redirect, url_for, flash
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
 
-import database
-from database import db, db_conn
-from util import login_required
+import app.common.database as db
+import app.common.databaseQueries as dbQuery
+from app.common.util import login_required
 
 
 auth = Blueprint("auth", __name__, template_folder="templates", static_folder="static")
+
+
+@auth.route('/login', methods = ['GET', 'POST'])
+def login():
+
+    if request.method == 'GET':
+        # Check if the user is already loggin in. If so redirect them to the dashboard homepage, otherwise return the login page.
+        if 'loggedin' in session and session['loggedin']:
+            return redirect(url_for('dashboard.home'))
+        else:
+            return render_template('login.html')
+
+
+    if request.method == 'POST':
+        # Attempt to login the user in, and return the login page
+
+        email = request.form['email']
+        password = request.form['psw']
+        
+        userId = dbQuery.get_user_id(email)
+
+        if userId == None:
+            flash("No user exists with that email")
+            return render_template('login.html')
+
+        userPswHash = dbQuery.get_user_password_hash(userId)
+
+        if check_password_hash(userPswHash, password):
+            session['loggedin'] = True
+            session['userId'] = userId
+        
+        return redirect(url_for('auth.login'))
+
+
+
+@auth.route('/register', methods = ['GET', 'POST'])
+def register():
+
+    if request.method == 'GET':
+        return render_template('register.html')
+
+
+    if request.method == 'POST':
+        # Attempt to register an account
+
+        email = request.form['email']
+        password1 = request.form['psw']
+        password2 = request.form['psw-repeat']
+
+        userId = dbQuery.get_user_id(email)
+
+        if userId is not None:
+            flash("A user with that email already exists")
+            return render_template('register.html')    
+
+        if password1 != password2:
+            flash("Passwords do not match!")
+            return render_template('register.html')
+
+        password_hash = generate_password_hash(password1, 'sha256')
+
+        dbQuery.register_user(email, password_hash)
+    
+        return redirect(url_for('auth.login'))
+
+
+
+@auth.route('/logout')
+def logout():
+    for key in list(session.keys()):
+        print(key)
+        session.pop(key)
+
+    return redirect(url_for('auth.login'))
+
+
+# ---------------------------------------------------------
+# Discord login
+# ---------------------------------------------------------
 
 # Disable SSL requirement
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -18,22 +98,6 @@ discordClientSecret = os.getenv('DISCORD_CLIENT_SECRET')
 discordAuthScope = ['identify', 'guilds']
 discordAuthRedirectUrl = 'http://www.senthing.com:80/auth/discord_oauth_callback'
 
-
-@auth.route('/')
-def login():
-    if 'loggedin' in session and session['loggedin']:
-        return redirect('/')
-    else:
-        return redirect(url_for('auth.discord_login'))
-
-
-@auth.route('/logout')
-def logout():
-    for key in list(session.keys()):
-        print(key)
-        session.pop(key)
-
-    return redirect(url_for('auth.login'))
 
 
 @auth.route('/discord_login')

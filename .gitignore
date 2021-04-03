@@ -3,6 +3,8 @@
 
 # VS Code
 .vscode/
+
+# Database
 *.db
 
 # Byte-compiled / optimized / DLL files

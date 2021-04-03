@@ -4,10 +4,9 @@ import dotenv
 dotenv.load_dotenv()
 
 import os
-from flask import Flask, redirect
+from flask import Flask, redirect, url_for
 
-import database
-from database import db, db_conn
+import app.common.database as database
 
 from app.api.views import api
 from app.auth.views import auth
@@ -17,21 +16,27 @@ from app.dashboard.views import dashboard
 # Create the instance of our web application
 app = Flask(__name__)
 
+db = database.Sqlite3Database()
+
 # Register views
 app.register_blueprint(api, url_prefix="/api")
 app.register_blueprint(auth, url_prefix="/auth")
 app.register_blueprint(dashboard, url_prefix="/dashboard")
 
-# Close the database after a request has closed
-app.teardown_appcontext(database.close_db)
+# Close the database after a request has finished
+app.teardown_appcontext(db._close_database)
 
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+# Flask configuration
+app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
+app.config['DEBUG'] = os.getenv("DEVELOPMENT")
+
+app.jinja_env.globals.update(db=db)
 
 
 @app.route('/')
 def landing_page():
-    return redirect('/dashboard')
+    return redirect(url_for('auth.login'))
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
