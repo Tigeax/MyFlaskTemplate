@@ -19,7 +19,7 @@ def login():
         if 'loggedin' in session and session['loggedin']:
             return redirect(url_for('dashboard.home'))
         else:
-            return render_template('login.html')
+            return render_template('auth/login.html')
 
 
     if request.method == 'POST':
@@ -39,6 +39,8 @@ def login():
         if check_password_hash(userPswHash, password):
             session['loggedin'] = True
             session['userId'] = userId
+        else:
+            flash("Invalid password")
         
         return redirect(url_for('auth.login'))
 
