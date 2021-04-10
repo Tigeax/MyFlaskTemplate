@@ -1,5 +1,5 @@
 from requests_oauthlib import OAuth2Session
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, url_for
 import os
 
 import app.common.database as database
@@ -15,7 +15,7 @@ dashboard = Blueprint("dashboard", __name__, template_folder="templates", static
 @dashboard.route('/')
 @login_required
 def home():
-    return render_template('home.html', userId=session['userId'])
+    return render_template('dashboard/home.html', userId=session['userId'])
 
 
 

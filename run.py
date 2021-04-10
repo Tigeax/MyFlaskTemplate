@@ -13,15 +13,17 @@ from app.auth.views import auth
 from app.dashboard.views import dashboard
 
 
+
 # Create the instance of our web application
 app = Flask(__name__)
 
 db = database.Sqlite3Database()
 
-# Register views
+# Register blueprints
 app.register_blueprint(api, url_prefix="/api")
 app.register_blueprint(auth, url_prefix="/auth")
 app.register_blueprint(dashboard, url_prefix="/dashboard")
+
 
 # Close the database after a request has finished
 app.teardown_appcontext(db._close_database)

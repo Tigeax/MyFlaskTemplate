@@ -32,7 +32,7 @@ def login():
 
         if userId == None:
             flash("No user exists with that email")
-            return render_template('login.html')
+            return render_template('auth/login.html')
 
         userPswHash = dbQuery.get_user_password_hash(userId)
 
@@ -48,7 +48,7 @@ def login():
 def register():
 
     if request.method == 'GET':
-        return render_template('register.html')
+        return render_template('auth/register.html')
 
 
     if request.method == 'POST':
