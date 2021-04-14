@@ -1,0 +1,9 @@
+{% set chartId = util.getNewChartId() %}
+
+<div id="chart{{chartId}}"></div>
+
+<script>
+
+    addChart('{{chartId}}', '{{chartDataUrl}}')
+
+</script>

@@ -7,6 +7,7 @@ import os
 from flask import Flask, redirect, url_for
 
 import app.common.database as database
+import app.common.util as util
 
 from app.api.views import api
 from app.auth.views import auth
@@ -32,12 +33,12 @@ app.teardown_appcontext(db._close_database)
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 app.config['DEBUG'] = os.getenv("DEVELOPMENT")
 
-app.jinja_env.globals.update(db=db)
+app.jinja_env.globals.update(db=db, util=util)
 
 
 @app.route('/')
 def landing_page():
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('dashboard.home'))
 
 
 if __name__ == "__main__":

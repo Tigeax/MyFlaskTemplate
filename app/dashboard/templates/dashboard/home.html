@@ -1,5 +1,22 @@
 {% extends 'dashboard/base.html' %}
 
 {% block content %}
-  Some content
+
+  <div class="m-5">
+
+      {% with chartDataUrl='graph_test_data' %}
+        {% include 'dashboard/components/chart.html' %}
+      {% endwith %}
+  
+      {% with chartDataUrl='graph_test_data' %}
+        {% include 'dashboard/components/chart.html' %}
+      {% endwith %}
+  
+
+  </div>  
+
+  <script>
+      // window.setInterval(updateAllCharts, 1000);
+  </script>
+
 {% endblock %}

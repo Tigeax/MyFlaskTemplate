@@ -1,6 +1,8 @@
 from requests_oauthlib import OAuth2Session
-from flask import Blueprint, render_template, session, url_for
+from flask import Blueprint, render_template, session, url_for, jsonify
 import os
+
+import datetime, random
 
 import app.common.database as database
 import app.common.databaseQueries as dbQuery
@@ -13,9 +15,28 @@ dashboard = Blueprint("dashboard", __name__, template_folder="templates", static
 
 
 @dashboard.route('/')
-@login_required
 def home():
-    return render_template('dashboard/home.html', userId=session['userId'])
+    return render_template('dashboard/home.html')
+
+
+
+@dashboard.route('/graph_test_data')
+def graph_test_data():
+
+    measurementsData = [{'x': datetime.datetime.now().strftime('%H:%M:%S'), 'y': random.randint(1,10)}, {'x': datetime.datetime.now().strftime('%H:%M:%S'), 'y': random.randint(1,10)}, {'x': datetime.datetime.now().strftime('%H:%M:%S'), 'y': random.randint(1,10)}, {'x': datetime.datetime.now().strftime('%H:%M:%S'), 'y': random.randint(1,10)}, {'x': datetime.datetime.now().strftime('%H:%M:%S'), 'y': random.randint(1,10)}, {'x': datetime.datetime.now().strftime('%H:%M:%S'), 'y': random.randint(1,10)}, {'x': datetime.datetime.now().strftime('%H:%M:%S'), 'y': random.randint(1,10)}, {'x': datetime.datetime.now().strftime('%H:%M:%S'), 'y': random.randint(1,10)}]
+
+    measurements = []
+
+    for measurement in measurementsData:
+        info = {}
+        info['x'] = measurement['x']
+        info['y'] = measurement['y']
+        measurements.append(info)
+
+    data = [{'name': 'testData', 'data': measurements}]
+
+    return jsonify(data)
+    
 
 
 

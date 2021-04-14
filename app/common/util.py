@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import session, redirect, url_for
+from flask import session, redirect, url_for, g
 
 
 # Function for the login_required decorator
@@ -14,3 +14,14 @@ def login_required(func):
         return func()
 
     return secure_function
+
+
+def getNewChartId():
+
+    if 'numCharts' not in g:
+        numCharts = 0
+    else:
+        numCharts = g.numCharts + 1
+
+    g.numCharts = numCharts
+    return numCharts
