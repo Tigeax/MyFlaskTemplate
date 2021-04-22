@@ -90,7 +90,7 @@ class MicrosoftSQLDatabase():
         Open the connection to the SQL databse
         Return a cursor object of the connection
         '''
-        conn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+self.server+';DATABASE='+self.database+';UID='+self.username+';PWD='+self.password)
+        conn = pyodbc.connect('DRIVER={SQL Server};SERVER='+self.server+';DATABASE='+self.database+';UID='+self.username+';PWD='+self.password)
         cursor = conn.cursor()
         print("DEBUG: Database opened")
         return cursor, conn
