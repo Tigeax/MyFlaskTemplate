@@ -2,9 +2,40 @@ import os, sqlite3, pyodbc
 from flask import g
 
 
+class DatabaseInterface():
+    '''
+    Custom database class to wrap around a database library to interact with the database.
+    Using the Flask global environment to only open the database once during a request
+    '''
+
+    def __init__(self):
+        pass
+
+    def _open_database(self):
+        pass
+
+    def _close_database(self, error):
+        pass
+
+    def _get_connection(self):
+        pass
+
+    def _get_cursor(self):
+        pass
+
+    def execute(self, sql: str, parameters: tuple) -> None:
+        pass
+
+    def commit(self) -> None:
+        pass
+
+    def last_row_id(self) -> int:
+        pass
 
 
-class Sqlite3Database():
+
+
+class Sqlite3Database(DatabaseInterface):
     '''
     Custom database class to interface with a sqlite3 database
     Based on the sqlite3 library connection and cursor class
@@ -40,24 +71,23 @@ class Sqlite3Database():
             sqlite3DbCursor.connection.close()
 
 
-    def cursor(self):
+    def _get_connection(self):
+        return self._get_cursor().connection
+
+
+    def _get_cursor(self):
         ''' Get the cursor object for the current application context, if it doens't exists create it '''
 
         if 'sqlite3_db_cursor' not in g:
             cursor = self._open_database()
             g.sqlite3_db_cursor = cursor
         return g.sqlite3_db_cursor
-
-
-    def connection(self):
-        return self.cursor().connection
     
 
     def execute(self, sql, parameters=()):
         ''' Execute an sql statement with optional parameters to the current transaction '''
         self.cursor().execute(sql, parameters)
         return self.cursor()
-
 
     def commit(self):
         '''Commit the changes in the current transaction made by sql statements to the database '''
@@ -108,8 +138,17 @@ class MicrosoftSQLDatabase():
             print("DEBUG: Database closed")
             SQLDbConn.close()
 
+    def _get_connection(self):
+        ''' Get the connection object for the current application context, if it doens't exists create it '''
 
-    def cursor(self):
+        if 'sql_db_conn' not in g:
+            cursor, conn = self._open_database()
+            g.sql_db_cursor = cursor
+            g.sql_db_conn = conn
+        return g.sql_db_conn
+
+
+    def _get_cursor(self):
         ''' Get the cursor object for the current application context, if it doens't exists create it '''
 
         if 'sql_db_cursor' not in g:
@@ -118,15 +157,6 @@ class MicrosoftSQLDatabase():
             g.sql_db_conn = conn
         return g.sql_db_cursor
 
-
-    def connection(self):
-        ''' Get the connection object for the current application context, if it doens't exists create it '''
-
-        if 'sql_db_conn' not in g:
-            cursor, conn = self._open_database()
-            g.sql_db_cursor = cursor
-            g.sql_db_conn = conn
-        return g.sql_db_conn
     
 
     def execute(self, sql, parameters=()):
