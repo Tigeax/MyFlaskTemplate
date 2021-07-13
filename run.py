@@ -1,3 +1,5 @@
+# TestCommit
+
 import dotenv
 
 # Load the environmental variables from the .env file
@@ -12,8 +14,6 @@ import app.common.util as util
 from app.api.views import api
 from app.auth.views import auth
 from app.dashboard.views import dashboard
-
-
 
 # Create the instance of our web application
 app = Flask(__name__)
