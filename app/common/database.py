@@ -142,5 +142,4 @@ class MicrosoftSQLDatabase(DatabaseQueries):
 
     def last_row_id(self):
         ''' Get the id of the last row that was added into the database, this is only set if an INSERT statement was used '''
-        lastRowId = self.cursor().execute('select SCOPE_IDENTITY()').fetchone()[0]
-        return lastRowId
+        return self.cursor().execute('select SCOPE_IDENTITY()').fetchone()[0]
