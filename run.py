@@ -1,5 +1,3 @@
-# TestCommit
-
 import dotenv
 
 # Load the environmental variables from the .env file
