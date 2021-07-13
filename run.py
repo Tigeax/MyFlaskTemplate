@@ -32,6 +32,7 @@ app.teardown_appcontext(db._close_database)
 # Flask configuration
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
 app.config['DEBUG'] = os.getenv("DEVELOPMENT")
+app.config['DATABASE'] = db
 
 app.jinja_env.globals.update(db=db, util=util)
 

@@ -1,6 +1,8 @@
 from functools import wraps
-from flask import session, redirect, url_for, g
+from flask import session, redirect, url_for, g, current_app
 
+def get_db():
+    return current_app.config['DATABASE']
 
 # Function for the login_required decorator
 # Check if the user is logged in. If not send them to the login page
@@ -18,10 +20,7 @@ def login_required(func):
 
 def getNewChartId():
 
-    if 'numCharts' not in g:
-        numCharts = 0
-    else:
-        numCharts = g.numCharts + 1
-
+    numCharts = 0 if 'numCharts' not in g else g.numCharts + 1
+    
     g.numCharts = numCharts
     return numCharts

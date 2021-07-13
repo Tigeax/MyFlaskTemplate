@@ -1,27 +1,34 @@
-import app.common.database as database
-
-db = database.Sqlite3Database()
+from app.common.databaseInterface import DatabaseInterface
 
 
-def get_user_id(email):
-    row = db.execute('SELECT id FROM user WHERE email = ?', (email,)).fetchone()
+class DatabaseQueries(DatabaseInterface):
 
-    if row == None:
+    def test(self):
+        self.execute(
+            'INSERT INTO test (name) VALUES ("test");'
+        )
+
+
+    def get_user_id(self, email):
+        row = self.execute('SELECT id FROM user WHERE email = ?', (email,)).fetchone()
+
+        if row is not None:
+            return row['id']
+
         print("no users found")
         return None
-    else:
-        return row['id']
 
 
-def get_user_password_hash(userId):
-    passwordHash = db.execute('SELECT password_hash FROM user WHERE id = ?', (userId,)).fetchone()['password_hash']
-    return passwordHash
+    def get_user_password_hash(self, userId):
+        return self.execute(
+            'SELECT password_hash FROM user WHERE id = ?', (userId,)
+        ).fetchone()['password_hash']
 
 
-def register_user(email, passwordHash):
-    db.execute('INSERT INTO user (email, password_hash) VALUES (?, ?)', (email, passwordHash))
-    db.commit()
-    return db.last_row_id()
+    def register_user(self, email, passwordHash):
+        self.execute('INSERT INTO user (email, password_hash) VALUES (?, ?)', (email, passwordHash))
+        self.commit()
+        return self.last_row_id()
 
 
 

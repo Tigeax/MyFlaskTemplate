@@ -1,17 +1,15 @@
 from requests_oauthlib import OAuth2Session
 from flask import Blueprint, render_template, session, url_for, jsonify
-import os
+from werkzeug.local import LocalProxy
 
-import datetime, random
+import os, datetime, random
 
-import app.common.database as database
-import app.common.databaseQueries as dbQuery
-from app.common.util import login_required
+from app.common.util import login_required, get_db
 
 
 dashboard = Blueprint("dashboard", __name__, template_folder="templates", static_folder="static")
 
-
+db = LocalProxy(get_db)
 
 
 @dashboard.route('/')
@@ -28,9 +26,7 @@ def graph_test_data():
     measurements = []
 
     for measurement in measurementsData:
-        info = {}
-        info['x'] = measurement['x']
-        info['y'] = measurement['y']
+        info = {'x': measurement['x'], 'y': measurement['y']}
         measurements.append(info)
 
     data = [{'name': 'testData', 'data': measurements}]

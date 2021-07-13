@@ -2,13 +2,16 @@ from requests_oauthlib import OAuth2Session
 from flask import Flask, request, session, Blueprint, render_template, redirect, url_for, flash
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.local import LocalProxy
 
-import app.common.database as db
-import app.common.databaseQueries as dbQuery
-from app.common.util import login_required
+
+from app.common.util import login_required, get_db
 
 
 auth = Blueprint("auth", __name__, template_folder="templates", static_folder="static")
+
+
+db = LocalProxy(get_db)
 
 
 @auth.route('/login', methods = ['GET', 'POST'])
@@ -22,15 +25,15 @@ def login():
             return render_template('auth/login.html')
 
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         # Attempt to login the user in, and return the login page
 
         email = request.form['email']
         password = request.form['psw']
-        
+
         userId = dbQuery.get_user_id(email)
 
-        if userId == None:
+        if userId is None:
             flash("No user exists with that email")
             return render_template('auth/login.html')
 
@@ -41,7 +44,7 @@ def login():
             session['userId'] = userId
         else:
             flash("Invalid password")
-        
+
         return redirect(url_for('auth.login'))
 
 
