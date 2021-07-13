@@ -37,23 +37,16 @@ class DatabaseQueries(DatabaseInterface):
         return self.last_row_id()
 
 
+    def add_user_by_discord_id(self, discordId):
+        self.execute('INSERT INTO user (discord_id) VALUES (?)', (discordId,))
+        self.commit()
 
 
+    def get_user_id_by_discord_id(self, discordId):
+        result = self.execute('SELECT id FROM user WHERE discord_id = ?', (discordId,)).fetchone()
 
+        if result is not None:
+            return result['id']
 
-
-
-def add_user_by_discord_id(discordId):
-    db.execute('INSERT INTO user (discord_id) VALUES (?)', (discordId,))
-    db.commit()
-
-
-def get_user_id_by_discord_id(discordId):
-    result = db.execute('SELECT id FROM user WHERE discord_id = ?', (discordId,)).fetchone()
-
-    if result is None:
         add_user_by_discord_id(discordId)
-        userId = get_user_id_by_discord_id(discordId)
-        return userId
-    else:
-        return result['id']
+        return get_user_id_by_discord_id(discordId)
