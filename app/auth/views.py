@@ -31,13 +31,13 @@ def login():
         email = request.form['email']
         password = request.form['psw']
 
-        userId = dbQuery.get_user_id(email)
+        userId = db.get_user_id(email)
 
         if userId is None:
             flash("No user exists with that email")
             return render_template('auth/login.html')
 
-        userPswHash = dbQuery.get_user_password_hash(userId)
+        userPswHash = db.get_user_password_hash(userId)
 
         if check_password_hash(userPswHash, password):
             session['loggedin'] = True
@@ -63,7 +63,7 @@ def register():
         password1 = request.form['psw']
         password2 = request.form['psw-repeat']
 
-        userId = dbQuery.get_user_id(email)
+        userId = db.get_user_id(email)
 
         if userId is not None:
             flash("A user with that email already exists")
@@ -75,7 +75,7 @@ def register():
 
         password_hash = generate_password_hash(password1, 'sha256')
 
-        dbQuery.register_user(email, password_hash)
+        db.register_user(email, password_hash)
     
         return redirect(url_for('auth.login'))
 
@@ -138,6 +138,6 @@ def discord_oauth_callback():
     response = discord.get('https://discordapp.com/api' + '/users/@me')
 
     session['loggedin'] = True
-    session['userId'] = database.get_user_id_by_discord_id(response.json()['id'])
+    session['userId'] = db.get_user_id_by_discord_id(response.json()['id'])
 
     return redirect(url_for('auth.login'))
