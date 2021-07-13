@@ -1,45 +1,14 @@
 import os, sqlite3, pyodbc
 from flask import g
 
-
-class DatabaseInterface():
-    '''
-    Custom database class to wrap around a database library to interact with the database.
-    Using the Flask global environment to only open the database once during a request
-    '''
-
-    def __init__(self):
-        pass
-
-    def _open_database(self):
-        pass
-
-    def _close_database(self, error):
-        pass
-
-    def _get_connection(self):
-        pass
-
-    def _get_cursor(self):
-        pass
-
-    def execute(self, sql: str, parameters: tuple) -> None:
-        pass
-
-    def commit(self) -> None:
-        pass
-
-    def last_row_id(self) -> int:
-        pass
+from app.common.databaseQueries import DatabaseQueries
 
 
-
-
-class Sqlite3Database(DatabaseInterface):
+class Sqlite3Database(DatabaseQueries):
     '''
     Custom database class to interface with a sqlite3 database
     Based on the sqlite3 library connection and cursor class
-    Using the Flask global environment to only open the database once during a request
+    Interfacing the DatabaseQueries class which wraps around the DatabaseInterface class
     '''
 
     def __init__(self, dbPath=os.getenv("SQLITE3_DATABASE_PATH")):
@@ -96,16 +65,15 @@ class Sqlite3Database(DatabaseInterface):
 
     def last_row_id(self):
         ''' Get the id of the last row that was added into the database, this is only set if an INSERT statement was used '''
-        lastRowId = self.cursor().lastrowid
-        return lastRowId
+        return self.cursor().lastrowid
 
 
 
-class MicrosoftSQLDatabase():
+class MicrosoftSQLDatabase(DatabaseQueries):
     '''
     Custom database class to interface with a Microsoft SQL database
     Based on the pyodbc library connection and cursor class
-    Using the Flask global environment to only open the database once during a request
+    Interfacing the DatabaseQueries class which wraps around the DatabaseInterface class
     '''
 
     def __init__(self, server=os.getenv("SQL_SERVER"), database=os.getenv("SQL_DATABASE"), username=os.getenv("SQL_SERVER_USERNAME"), password=os.getenv("SQL_SERVER_PASSWORD")):
@@ -142,9 +110,7 @@ class MicrosoftSQLDatabase():
         ''' Get the connection object for the current application context, if it doens't exists create it '''
 
         if 'sql_db_conn' not in g:
-            cursor, conn = self._open_database()
-            g.sql_db_cursor = cursor
-            g.sql_db_conn = conn
+            self._open_and_save_db_in_g()
         return g.sql_db_conn
 
 
@@ -152,10 +118,14 @@ class MicrosoftSQLDatabase():
         ''' Get the cursor object for the current application context, if it doens't exists create it '''
 
         if 'sql_db_cursor' not in g:
-            cursor, conn = self._open_database()
-            g.sql_db_cursor = cursor
-            g.sql_db_conn = conn
+            self._open_and_save_db_in_g()
         return g.sql_db_cursor
+
+
+    def _open_and_save_db_in_g(self):
+        cursor, conn = self._open_database()
+        g.sql_db_cursor = cursor
+        g.sql_db_conn = conn
 
     
 

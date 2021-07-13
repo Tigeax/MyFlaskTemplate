@@ -1,12 +1,11 @@
 
-
-# TODO commenting reference to databaseQueries
 class DatabaseInterface():
     '''
     Custom database class to wrap around a database library to interact with the database
     Using the Flask global environment to only open the database once during a request
     Multiple instances of this class can be created without issue. As only one database connection will exist per request
     Can only be used in the application context
+    This class in inherited by the DatabaseQueries class in the DatabaseQueries.py file
     '''
 
     def __init__(self, app):
