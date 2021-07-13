@@ -48,5 +48,5 @@ class DatabaseQueries(DatabaseInterface):
         if result is not None:
             return result['id']
 
-        add_user_by_discord_id(discordId)
-        return get_user_id_by_discord_id(discordId)
+        self.add_user_by_discord_id(discordId)
+        return self.get_user_id_by_discord_id(discordId)
