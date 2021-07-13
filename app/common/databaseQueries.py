@@ -2,6 +2,12 @@ from app.common.databaseInterface import DatabaseInterface
 
 
 class DatabaseQueries(DatabaseInterface):
+    '''
+    Wrapper class for the DatabaseInterface interface
+    This class adds often used queries
+    The functions from DatabaseInterface have to be overwritten by one of the classes in database.py
+    Who inherit this class
+    '''
 
     def test(self):
         self.execute(
